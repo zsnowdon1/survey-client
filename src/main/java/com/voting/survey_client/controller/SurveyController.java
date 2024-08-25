@@ -1,8 +1,7 @@
 package com.voting.survey_client.controller;
 
-import com.voting.survey_client.dto.SendVoteRequest;
-import com.voting.survey_client.entity.Vote;
-import com.voting.survey_client.service.KafkaProducerServiceImpl;
+import com.voting.survey_client.dto.SurveyRequest;
+import com.voting.survey_client.service.KafkaProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,31 +11,23 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vote")
+@CrossOrigin(origins = "http:/localhost:3000")
 public class SurveyController {
 
     @Autowired
-    private KafkaProducerServiceImpl kafkaProducerService;
+    private KafkaProducerService kafkaProducerService;
 
     private static final Logger logger = LoggerFactory.getLogger(SurveyController.class);
 
-    @PostMapping("/send")
-    public ResponseEntity<String> sendVote(@RequestBody SendVoteRequest request) {
-        logger.info("RECEIVED SEND VOTE REQUEST");
+    @PostMapping("/submitSurvey")
+    public ResponseEntity<String> sendVote(@RequestBody SurveyRequest request) {
+        logger.info("RECEIVED SEND VOTE REQUEST {}", request.toString());
         try {
-//            kafkaProducerService.sendVote("TEST_KEY", "TEST_VALUE");
+            kafkaProducerService.sendVote(request);
+            return new ResponseEntity<>("Successfully submitted votes", HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            throw e;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> testResponse() {
-        logger.info("RECEIVED TEST SURVEY CLIENT REQUEST");
-        Vote vote = new Vote(5,4,"zsnowdon");
-        kafkaProducerService.sendVote("TEST_KEY", vote);
-        return new ResponseEntity<>("Success", HttpStatus.ACCEPTED);
-    }
-
 
 }
