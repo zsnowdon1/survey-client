@@ -1,6 +1,6 @@
 package com.voting.survey_client.service;
 
-import com.voting.survey_client.entity.Vote;
+import com.voting.survey_client.dto.SurveyRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +14,14 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerServiceImpl.class);
 
-//    @Autowired
-//    public KafkaProducerServiceImpl(KafkaTemplate<String, Object> kafkaTemplate,
-//                                @Value("${spring.kafka.topic.name}") String topicName) {
-//        this.kafkaTemplate = kafkaTemplate;
-//        this.topicName = topicName;
-//    }
-
     @Autowired
     public KafkaProducerServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
-    public void sendVote(String key, Object message) {
+    public void sendVote(SurveyRequest vote) {
         logger.info("SENDING KAFKA MESSAGE FROM PRODUCER");
-        kafkaTemplate.send("votes-topic", key, message);
+        kafkaTemplate.send("votes-topic", vote);
     }
 }
