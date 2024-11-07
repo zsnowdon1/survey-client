@@ -18,11 +18,15 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapAddress;
+    private final String bootstrapAddress;
 
-    @Value("${spring.kafka.properties.start-timer}")
-    private int failSleeper;
+    private final int failSleeper;
+
+    public KafkaConfig(@Value("${spring.kafka.bootstrap-servers}") String bootstrapAddress,
+                       @Value("${spring.kafka.properties.start-timer}") int failSleeper) {
+        this.bootstrapAddress = bootstrapAddress;
+        this.failSleeper = failSleeper;
+    }
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
