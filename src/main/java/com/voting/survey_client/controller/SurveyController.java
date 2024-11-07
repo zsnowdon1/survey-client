@@ -4,7 +4,6 @@ import com.voting.survey_client.dto.SurveyRequest;
 import com.voting.survey_client.service.KafkaProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http:/localhost:3000")
 public class SurveyController {
 
-    @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private final KafkaProducerService kafkaProducerService;
 
     private static final Logger logger = LoggerFactory.getLogger(SurveyController.class);
+
+    public SurveyController(KafkaProducerService kafkaProducerService) {
+        this.kafkaProducerService = kafkaProducerService;
+    }
 
     @PostMapping("/submitSurvey")
     public ResponseEntity<String> sendVote(@RequestBody SurveyRequest request) {
