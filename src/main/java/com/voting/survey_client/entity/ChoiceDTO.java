@@ -2,34 +2,23 @@ package com.voting.survey_client.entity;
 
 public class ChoiceDTO {
 
-    private Long choiceId;
-
-    private Long questionId;
+    private String choiceId;
 
     private String choiceText;
 
-    public ChoiceDTO(Long choiceId, Long questionId, String choiceText) {
+    public ChoiceDTO(String choiceId, String choiceText) {
         this.choiceId = choiceId;
-        this.questionId = questionId;
         this.choiceText = choiceText;
     }
 
     public ChoiceDTO() { }
 
-    public Long getChoiceId() {
+    public String getChoiceId() {
         return choiceId;
     }
 
-    public void setChoiceId(Long choiceId) {
+    public void setChoiceId(String choiceId) {
         this.choiceId = choiceId;
-    }
-
-    public Long getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
     }
 
     public String getChoiceText() {
@@ -43,8 +32,7 @@ public class ChoiceDTO {
     @Override
     public String toString() {
         return "ChoiceDTO{" +
-                "choiceId=" + choiceId +
-                ", questionId=" + questionId +
+                "choiceId='" + choiceId + '\'' +
                 ", choiceText='" + choiceText + '\'' +
                 '}';
     }

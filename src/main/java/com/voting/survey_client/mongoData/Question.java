@@ -6,17 +6,16 @@ import java.util.List;
 
 public class Question {
 
-    @Id
-    private Long questionId;
+    private String questionId;
     private String questionText;
 
     private List<Choice> choices;
 
-    public Long getQuestionId() {
+    public String getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(Long questionId) {
+    public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
 

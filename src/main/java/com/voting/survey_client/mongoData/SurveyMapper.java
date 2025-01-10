@@ -48,6 +48,7 @@ public class SurveyMapper {
     public static QuestionDTO toDTOQuestion(Question question) {
         QuestionDTO questionDTO = new QuestionDTO();
         questionDTO.setQuestionText(question.getQuestionText());
+        questionDTO.setQuestionId(question.getQuestionId());
         if(!isNull(question.getChoices()))
             questionDTO.setChoices(toDTOChoiceList(question.getChoices()));
         return questionDTO;
@@ -56,7 +57,7 @@ public class SurveyMapper {
     public static Choice toEntityChoice(ChoiceDTO choiceDTO) {
         Choice choice = new Choice();
         choice.setChoiceText(choiceDTO.getChoiceText());
-        choice.setChoiceId(choiceDTO.getChoiceId() != null ? choiceDTO.getChoiceId() : null);
+        choice.setChoiceId(choice.getChoiceId());
         return choice;
     }
 

@@ -4,13 +4,13 @@ import java.util.List;
 
 public class QuestionDTO {
 
-    private Long questionId;
+    private String questionId;
 
     private String questionText;
 
     private List<ChoiceDTO> choices;
 
-    public QuestionDTO(Long questionId, String questionText, List<ChoiceDTO> choices) {
+    public QuestionDTO(String questionId, String questionText, List<ChoiceDTO> choices) {
         this.questionId = questionId;
         this.questionText = questionText;
         this.choices = choices;
@@ -18,11 +18,11 @@ public class QuestionDTO {
 
     public QuestionDTO() { }
 
-    public Long getQuestionId() {
+    public String getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(Long questionId) {
+    public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
 

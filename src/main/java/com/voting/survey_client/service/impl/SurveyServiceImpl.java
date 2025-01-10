@@ -29,16 +29,20 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     public SurveyDTO getSurvey(String id) {
+        // Create ID for redis ex: Survey:id and checks for it
         String cacheKey = SURVEY_CACHE_PREFIX + id;
         Survey cachedSurvey = (Survey) redisTemplate.opsForValue().get(cacheKey);
         if(cachedSurvey != null) {
             return SurveyMapper.toDTOSurvey(cachedSurvey);
         }
 
+        // If not in redis, pull from MongoDB
         Optional<Survey> optionalSurvey = this.surveyRepository.findById(id);
         if(optionalSurvey.isEmpty()) {
             throw new RuntimeException("Survey not found with id: " + id);
         }
+
+        // Store in redis
         Survey mongoSurvey = optionalSurvey.get();
         redisTemplate.opsForValue().set(cacheKey, mongoSurvey, 1, TimeUnit.HOURS);
         return SurveyMapper.toDTOSurvey(mongoSurvey);
