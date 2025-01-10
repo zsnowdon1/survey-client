@@ -6,9 +6,11 @@ import com.voting.survey_client.mongoData.Survey;
 import com.voting.survey_client.mongoData.SurveyMapper;
 import com.voting.survey_client.service.SurveyService;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Primary
@@ -16,13 +18,29 @@ public class SurveyServiceImpl implements SurveyService {
 
     private final SurveyRepository surveyRepository;
 
-    public SurveyServiceImpl(SurveyRepository surveyRepository) {
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String SURVEY_CACHE_PREFIX = "Survey:";
+
+    public SurveyServiceImpl(SurveyRepository surveyRepository, RedisTemplate<String, Object> redisTemplate) {
         this.surveyRepository = surveyRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public SurveyDTO getSurvey(String id) {
-        Optional<Survey> mongoSurvey = this.surveyRepository.findById(id);
-        return SurveyMapper.toDTOSurvey(mongoSurvey.orElseThrow(() -> new RuntimeException("Survey not found with id: " + id)));
+        String cacheKey = SURVEY_CACHE_PREFIX + id;
+        Survey cachedSurvey = (Survey) redisTemplate.opsForValue().get(cacheKey);
+        if(cachedSurvey != null) {
+            return SurveyMapper.toDTOSurvey(cachedSurvey);
+        }
+
+        Optional<Survey> optionalSurvey = this.surveyRepository.findById(id);
+        if(optionalSurvey.isEmpty()) {
+            throw new RuntimeException("Survey not found with id: " + id);
+        }
+        Survey mongoSurvey = optionalSurvey.get();
+        redisTemplate.opsForValue().set(cacheKey, mongoSurvey, 1, TimeUnit.HOURS);
+        return SurveyMapper.toDTOSurvey(mongoSurvey);
     }
 }
