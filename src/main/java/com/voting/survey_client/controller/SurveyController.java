@@ -1,7 +1,9 @@
 package com.voting.survey_client.controller;
 
 import com.voting.survey_client.dto.SurveyRequest;
+import com.voting.survey_client.entity.SurveyDTO;
 import com.voting.survey_client.service.KafkaProducerService;
+import com.voting.survey_client.service.SurveyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,15 +12,28 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vote")
-@CrossOrigin(origins = "http:/localhost:3000")
+@CrossOrigin
 public class SurveyController {
 
     private final KafkaProducerService kafkaProducerService;
 
+    private final SurveyService surveyService;
+
     private static final Logger logger = LoggerFactory.getLogger(SurveyController.class);
 
-    public SurveyController(KafkaProducerService kafkaProducerService) {
+    public SurveyController(KafkaProducerService kafkaProducerService, SurveyService surveyService) {
         this.kafkaProducerService = kafkaProducerService;
+        this.surveyService = surveyService;
+    }
+
+    @GetMapping("/{surveyId}")
+    public ResponseEntity<SurveyDTO> getSurvey(@PathVariable String surveyId) {
+        try {
+            SurveyDTO survey = surveyService.getSurvey(surveyId);
+            return new ResponseEntity<>(survey, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/submitSurvey")
