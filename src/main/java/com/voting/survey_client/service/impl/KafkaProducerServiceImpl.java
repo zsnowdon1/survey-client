@@ -1,6 +1,7 @@
-package com.voting.survey_client.service;
+package com.voting.survey_client.service.impl;
 
 import com.voting.survey_client.dto.SurveyRequest;
+import com.voting.survey_client.service.KafkaProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,7 +20,6 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
 
     @Override
     public void sendVote(SurveyRequest vote) {
-        logger.info("SENDING KAFKA MESSAGE FROM PRODUCER");
         kafkaTemplate.send("votes-topic", vote);
     }
 }

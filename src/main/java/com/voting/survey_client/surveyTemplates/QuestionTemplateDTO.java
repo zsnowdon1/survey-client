@@ -1,6 +1,6 @@
 package com.voting.survey_client.surveyTemplates;
 
-import com.voting.survey_client.mongoData.Choice;
+import com.voting.mongoData.Choice;
 
 import java.util.List;
 

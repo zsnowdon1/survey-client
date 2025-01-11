@@ -1,8 +1,11 @@
 package com.voting.survey_client.mongoData;
 
-import com.voting.survey_client.entity.ChoiceDTO;
-import com.voting.survey_client.entity.QuestionDTO;
-import com.voting.survey_client.entity.SurveyDTO;
+import com.voting.entities.ChoiceDTO;
+import com.voting.entities.QuestionDTO;
+import com.voting.entities.SurveyDTO;
+import com.voting.mongoData.Choice;
+import com.voting.mongoData.Question;
+import com.voting.mongoData.Survey;
 
 import java.util.List;
 import java.util.stream.Collectors;
