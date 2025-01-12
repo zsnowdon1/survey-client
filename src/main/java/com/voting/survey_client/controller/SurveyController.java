@@ -32,6 +32,7 @@ public class SurveyController {
             SurveyDTO survey = surveyService.getSurvey(surveyId);
             return new ResponseEntity<>(survey, HttpStatus.OK);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

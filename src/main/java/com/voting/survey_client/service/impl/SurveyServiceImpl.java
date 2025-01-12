@@ -33,7 +33,11 @@ public class SurveyServiceImpl implements SurveyService {
         String cacheKey = SURVEY_CACHE_PREFIX + id;
         Survey cachedSurvey = (Survey) redisTemplate.opsForValue().get(cacheKey);
         if(cachedSurvey != null) {
-            return SurveyMapper.toDTOSurvey(cachedSurvey);
+            if(cachedSurvey.getStatus().equals("LIVE")) {
+                return SurveyMapper.toDTOSurvey(cachedSurvey);
+            } else {
+                throw new RuntimeException("Survey is not live for id: " + id);
+            }
         }
 
         // If not in redis, pull from MongoDB
@@ -44,7 +48,11 @@ public class SurveyServiceImpl implements SurveyService {
 
         // Store in redis
         Survey mongoSurvey = optionalSurvey.get();
-        redisTemplate.opsForValue().set(cacheKey, mongoSurvey, 1, TimeUnit.HOURS);
-        return SurveyMapper.toDTOSurvey(mongoSurvey);
+        if(mongoSurvey.getStatus().equals("LIVE")) {
+            redisTemplate.opsForValue().set(cacheKey, mongoSurvey, 1, TimeUnit.HOURS);
+            return SurveyMapper.toDTOSurvey(mongoSurvey);
+        } else {
+            throw new RuntimeException("Survey is not live for id: " + id);
+        }
     }
 }
