@@ -38,7 +38,7 @@ public class SurveyController {
     }
 
     @PostMapping("/submitSurvey")
-    public ResponseEntity<String> sendVote(@RequestBody SurveyRequest request) {
+    public ResponseEntity<String> submitSurvey(@RequestBody SurveyRequest request) {
         logger.info("RECEIVED SEND VOTE REQUEST {}", request.toString());
         try {
             kafkaProducerService.sendVote(request);
