@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/client/survey")
+@RequestMapping("/client/surveys")
 @CrossOrigin
 public class SurveyController {
 

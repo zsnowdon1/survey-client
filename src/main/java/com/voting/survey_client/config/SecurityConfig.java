@@ -25,13 +25,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF protection if needed
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()) // Allow all routes without authentication
-                .formLogin(Customizer.withDefaults()) // Optional: Enable form login
-                .httpBasic(Customizer.withDefaults()); //
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
+                );
+
         return http.build();
     }
 

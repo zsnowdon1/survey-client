@@ -8,11 +8,11 @@ public class SurveyRequest {
 
     private String username;
 
-    private long surveyId;
+    private String surveyId;
 
     private SelectedChoice[] responses;
 
-    public SurveyRequest(String username, long surveyId, SelectedChoice[] responses) {
+    public SurveyRequest(String username, String surveyId, SelectedChoice[] responses) {
         this.username = username;
         this.surveyId = surveyId;
         this.responses = responses;
@@ -26,11 +26,11 @@ public class SurveyRequest {
         this.username = username;
     }
 
-    public long getSurveyId() {
+    public String getSurveyId() {
         return surveyId;
     }
 
-    public void setSurveyId(long surveyId) {
+    public void setSurveyId(String surveyId) {
         this.surveyId = surveyId;
     }
 
