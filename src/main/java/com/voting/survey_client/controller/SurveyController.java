@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vote")
+@RequestMapping("/client/survey")
 @CrossOrigin
 public class SurveyController {
 
@@ -26,10 +26,10 @@ public class SurveyController {
         this.surveyService = surveyService;
     }
 
-    @GetMapping("/{surveyId}")
-    public ResponseEntity<SurveyDTO> getSurvey(@PathVariable String surveyId) {
+    @GetMapping()
+    public ResponseEntity<SurveyDTO> getSurvey(@RequestParam String accessCode) {
         try {
-            SurveyDTO survey = surveyService.getSurvey(surveyId);
+            SurveyDTO survey = surveyService.getSurvey(accessCode);
             return new ResponseEntity<>(survey, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());

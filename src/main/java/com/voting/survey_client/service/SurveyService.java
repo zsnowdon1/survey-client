@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SurveyService {
 
-    SurveyDTO getSurvey(String id);
+    SurveyDTO getSurvey(String accessCode);
 }
