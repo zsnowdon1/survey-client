@@ -1,0 +1,47 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: client-service
+  config:
+    activate:
+      on-profile: default
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/voting
+    username: db
+    password: password
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    #    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      name: votes-topic
+    properties:
+      start-timer: 60000
+
+  redis:
+    host: redis-service.databases.svc.cluster.local
+    port: 6379
+
+  data:
+    mongodb:
+      uri: mongodb://mongo-service.databases.svc.cluster.local:27017/
+      database: surveyDB
+
+
+
+## LOGGING
+logging:
+  level:
+    root: INFO
+    com.voting: DEBUG
+  file:
+    name: ./logs/survey-client.log
+shared:
+  log:
+    dir: ~/logs
