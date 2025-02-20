@@ -14,8 +14,7 @@ spring:
     password: password
 
   kafka:
-    bootstrap-servers: kafka:9092
-    #    bootstrap-servers: localhost:9092
+    bootstrap-servers: boot-lzltmt7b.c2.kafka-serverless.us-east-1.amazonaws.com:9098
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

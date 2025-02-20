@@ -41,4 +41,9 @@ public class RedisConfig {
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
+
+    @Bean
+    public ChannelTopic topic() {
+        return new ChannelTopic("voteUpdates");
+    }
 }

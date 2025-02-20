@@ -41,9 +41,12 @@ public class SurveyController {
     public ResponseEntity<String> submitSurvey(@RequestBody SurveyRequest request) {
         logger.info("RECEIVED SEND VOTE REQUEST {}", request.toString());
         try {
+            surveyService.postVote(request);
+            // When kafka goes live...
             kafkaProducerService.sendVote(request);
             return new ResponseEntity<>("Successfully submitted votes", HttpStatus.ACCEPTED);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
