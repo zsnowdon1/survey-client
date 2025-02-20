@@ -25,6 +25,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Update dependencies
+        run: mvn versions:update-properties
+
       - name: Package jar
         run: mvn clean install -DskipTests --settings .mvn/settings.xml
 
