@@ -43,7 +43,7 @@ public class SurveyController {
         try {
             surveyService.postVote(request);
             // When kafka goes live...
-            kafkaProducerService.sendVote(request);
+//            kafkaProducerService.sendVote(request);
             return new ResponseEntity<>("Successfully submitted votes", HttpStatus.ACCEPTED);
         } catch (Exception e) {
             logger.error(e.getMessage());
