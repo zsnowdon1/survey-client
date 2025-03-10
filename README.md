@@ -1,4 +1,4 @@
-# Survey Client Service
+# Survey Client
 
 ## Overview
 Backend Spring Boot service for clients using surveys
