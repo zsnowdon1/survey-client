@@ -26,6 +26,11 @@ public class SurveyController{
         this.surveyService = surveyService;
     }
 
+    /**
+     * Retrieves a live survey for the clients who are filling out the survey
+     * @param accessCode Live code that is unique for each survey when the host makes it live
+     * @return SurveyDto Object that contains all details for a survey
+     */
     @GetMapping()
     public ResponseEntity<SurveyDTO> getSurvey(@RequestParam String accessCode) {
         try {
@@ -37,6 +42,11 @@ public class SurveyController{
         }
     }
 
+    /**
+     * Endpoint that is called after a client fills out the survey and submits it
+     * @param request Contains the filled out survey details
+     * @return String TODO: Update response
+     */
     @PostMapping("/submitSurvey")
     public ResponseEntity<String> submitSurvey(@RequestBody SurveyRequest request) {
         logger.info("RECEIVED SEND VOTE REQUEST {}", request.toString());
