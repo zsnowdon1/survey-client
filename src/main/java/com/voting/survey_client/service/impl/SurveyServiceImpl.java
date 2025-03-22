@@ -15,6 +15,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 @Service
 @Primary
@@ -35,17 +36,6 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     public SurveyDTO getSurvey(String accessCode) {
-//        String cacheKey = SURVEY_CACHE_PREFIX + id;
-//        Survey cachedSurvey = (Survey) redisTemplate.opsForValue().get(cacheKey);
-//        if(cachedSurvey != null) {
-//            if(cachedSurvey.getStatus().equals("LIVE") && cachedSurvey.getAccessCode().equals(accessCode)) {
-//                return SurveyMapper.toDTOSurvey(cachedSurvey);
-//            } else {
-//                throw new RuntimeException("Survey is not live for id: " + id);
-//            }
-//        } else {
-//            throw new RuntimeException("Survey is not found for id: " + id);
-//        }
         Survey cachedSurvey = (Survey) redisTemplate.opsForValue().get(SURVEY_CACHE_PREFIX + accessCode);
         return SurveyMapper.toDTOSurvey(cachedSurvey);
     }
@@ -53,28 +43,31 @@ public class SurveyServiceImpl implements SurveyService {
     @Override
     public void postVote(SurveyRequest request) {
         ObjectMapper objectMapper = new ObjectMapper();
-        for(SelectedChoice choice: request.getResponses()) {
-            logger.info("Processing vote for question " + choice.getQuestionId());
+        String correlationId = UUID.randomUUID().toString();
+
+        for (SelectedChoice choice : request.getResponses()) {
             String questionId = choice.getQuestionId();
             String choiceId = choice.getChoiceId();
-
             String redisKey = "survey:" + request.getSurveyId() + ":question:" + questionId + ":results";
-            logger.info("Incrementing votes for choice:" + choiceId);
+
+            logger.info("CorrelationID: {} - Processing vote for question: {}", correlationId, questionId);
             long newCount = redisTemplate.opsForHash().increment(redisKey, choiceId, 1);
 
             HashMap<String, Object> voteData = new HashMap<>();
-            voteData.put("choiceId", choice.getChoiceId());
-            voteData.put("questionId", choice.getQuestionId());
+            voteData.put("choiceId", choiceId);
+            voteData.put("questionId", questionId);
             voteData.put("votes", newCount);
+            voteData.put("correlationId", correlationId);
 
             try {
                 String updateMessage = objectMapper.writeValueAsString(voteData);
                 redisTemplate.convertAndSend(channelTopic.getTopic(), updateMessage);
+                logger.info("CorrelationID: {} - Published vote update for choice: {}", correlationId, choiceId);
             } catch (Exception e) {
-                logger.error("Failed to public vote count update to redis");
+                logger.error("CorrelationID: {} - Failed to publish vote update: {}", correlationId, e.getMessage());
             }
-            logger.info("Processed vote for survey: " + request.getSurveyId() + ", question: " + questionId + ", choice: " + choiceId);
         }
+        logger.info("CorrelationID: {} - Processed vote for survey: {}", correlationId, request.getSurveyId());
     }
 
 }
