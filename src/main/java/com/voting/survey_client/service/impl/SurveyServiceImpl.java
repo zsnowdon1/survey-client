@@ -1,7 +1,6 @@
 package com.voting.survey_client.service.impl;
 
 import com.voting.entities.SurveyDTO;
-import com.voting.entities.VoteUpdate;
 import com.voting.mongoData.Survey;
 import com.voting.survey_client.dto.SurveyRequest;
 import com.voting.survey_client.entity.SelectedChoice;
@@ -12,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -20,16 +22,15 @@ import java.util.UUID;
 public class SurveyServiceImpl implements SurveyService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisTemplate<String, Object> messageRedisTemplate;
-
-    private static final String SURVEY_CACHE_PREFIX = "Survey:";
-
+    private final DefaultRedisScript<Object> redisScript;
+    private static final String SURVEY_CACHE_PREFIX = "survey:cache:";
+    private static final String REDIS_SURVEY_RESULT_PREFIX = "survey:hosts:";
     private static final Logger logger = LoggerFactory.getLogger(SurveyServiceImpl.class);
 
     public SurveyServiceImpl(@Qualifier("redisTemplate") RedisTemplate<String, Object> redisTemplate,
-                             @Qualifier("messageRedisTemplate") RedisTemplate<String, Object> messageRedisTemplate) {
+                             DefaultRedisScript<Object> redisScript) {
         this.redisTemplate = redisTemplate;
-        this.messageRedisTemplate = messageRedisTemplate;
+        this.redisScript = redisScript;
     }
 
     @Override
@@ -50,35 +51,31 @@ public class SurveyServiceImpl implements SurveyService {
      */
     @Override
     public void postVote(SurveyRequest request) {
-        String activeHostsKey = "survey:" + request.getSurveyId() + ":active-hosts";
-        Long activeHostsCount = redisTemplate.opsForSet().size(activeHostsKey);
+        String surveyId = request.getSurveyId();
+        String hostsKey = REDIS_SURVEY_RESULT_PREFIX + surveyId;
+        String correlationId = UUID.randomUUID().toString();
 
-        if (activeHostsCount != null && activeHostsCount > 0) {
-            String correlationId = UUID.randomUUID().toString();
-            String channel = "survey:" + request.getSurveyId() + ":results";
+        for (SelectedChoice choice : request.getResponses()) {
+            String questionId = choice.getQuestionId();
+            String choiceId = choice.getChoiceId();
+            String redisKey = "survey:" + surveyId + ":question:" + questionId + ":results";
+            String channel = "survey:" + surveyId + ":results";
 
-            for (SelectedChoice choice : request.getResponses()) {
-                String questionId = choice.getQuestionId();
-                String choiceId = choice.getChoiceId();
-                String redisKey = "survey:" + request.getSurveyId() + ":question:" + questionId + ":results";
+            logger.info("CorrelationID: {} - Processing vote for question: {}", correlationId, questionId);
 
-                logger.info("CorrelationID: {} - Processing vote for question: {}", correlationId, questionId);
-                long newCount = redisTemplate.opsForHash().increment(redisKey, choiceId, 1);
-
-                VoteUpdate voteUpdate = new VoteUpdate(correlationId, questionId, choiceId, newCount);
-
-                try {
-                    messageRedisTemplate.convertAndSend(channel, voteUpdate);
-                    logger.info("CorrelationID: {} - Published vote update to channel {} for choice: {}",
-                            correlationId, channel, choiceId);
-                } catch (Exception e) {
-                    logger.error("CorrelationID: {} - Failed to publish vote update: {}", correlationId, e.getMessage());
-                }
+            try {
+                Object newCount = redisTemplate.execute(
+                        redisScript,
+                        Arrays.asList(redisKey, channel, hostsKey),
+                        choiceId, questionId
+                );
+                logger.info("CorrelationID: {} - Vote processed for choice: {}, new count: {}",
+                        correlationId, choiceId, newCount);
+            } catch (Exception e) {
+                logger.error("CorrelationID: {} - Failed to process vote for choice: {}", correlationId, choiceId, e);
             }
-            logger.info("CorrelationID: {} - Processed vote for survey: {}", correlationId, request.getSurveyId());
-        } else {
-            logger.info("No active hosts viewing results for survey: {}, skipping Redis publish", request.getSurveyId());
         }
+        logger.info("CorrelationID: {} - Processed vote for survey: {}", correlationId, surveyId);
     }
 
 }

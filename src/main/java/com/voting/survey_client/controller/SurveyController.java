@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/client/surveys")
 @CrossOrigin
-public class SurveyController{
-
-    private final KafkaProducerService kafkaProducerService;
+public class SurveyController {
 
     private final SurveyService surveyService;
 
     private static final Logger logger = LoggerFactory.getLogger(SurveyController.class);
 
-    public SurveyController(KafkaProducerService kafkaProducerService, SurveyService surveyService) {
-        this.kafkaProducerService = kafkaProducerService;
+    public SurveyController(SurveyService surveyService) {
         this.surveyService = surveyService;
     }
 
