@@ -1,4 +1,4 @@
-package com.voting.survey_client.dto;
+package com.voting.survey_client.entity;
 
 import com.voting.survey_client.entity.SelectedChoice;
 

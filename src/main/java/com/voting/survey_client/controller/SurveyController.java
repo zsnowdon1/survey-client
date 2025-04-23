@@ -1,8 +1,7 @@
 package com.voting.survey_client.controller.impl;
 
 import com.voting.entities.SurveyDTO;
-import com.voting.survey_client.dto.SurveyRequest;
-import com.voting.survey_client.service.KafkaProducerService;
+import com.voting.survey_client.entity.SurveyRequest;
 import com.voting.survey_client.service.SurveyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

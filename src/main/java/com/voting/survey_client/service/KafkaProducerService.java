@@ -1,6 +1,6 @@
 package com.voting.survey_client.service;
 
-import com.voting.survey_client.dto.SurveyRequest;
+import com.voting.survey_client.entity.SurveyRequest;
 import org.springframework.stereotype.Service;
 
 @Service

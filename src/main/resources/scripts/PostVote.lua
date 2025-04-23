@@ -19,8 +19,8 @@ local hostCount = redis.call('SCARD', hostsKey)
 
 -- Publish if hosts are active
 if hostCount > 0 then
-    local payload = '{"questionId":"' .. questionId ..
-                    '","choiceId":"' .. choiceId .. '","total":' .. newCount .. '}'
+    local payload = '{"questionId":' .. questionId ..
+                    ',"choiceId":' .. choiceId .. ',"total":' .. newCount .. '}'
     redis.call('PUBLISH', channel, payload)
 end
 
